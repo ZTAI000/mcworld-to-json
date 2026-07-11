@@ -1,2 +1,2 @@
-# mcworld-json-
+# mcworld转json可编辑的命令方块文本文件
 可以修改mcworld中的命令方块文本及其悬浮字，并回转为新mcworld
