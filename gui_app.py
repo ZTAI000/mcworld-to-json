@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-图形界面主体-tkinter
+图形界面主体-by tkinter
 """
 
 import os
