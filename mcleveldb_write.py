@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-基岩版 LevelDB 写入模块
+基岩版LevelDB写入模块
 """
 
 import os
