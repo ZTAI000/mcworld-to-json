@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-基岩版 NBT 编解码器
+基岩版NBT编解码器
 """
 
 import struct
