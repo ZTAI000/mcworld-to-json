@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-将修改后的 JSON 写回 .mcworld 存档
+将修改后的JSON写回.mcworld存档
 """
 
 import os
