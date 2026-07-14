@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-图形界面主体（tkinter 实现）— v3 全版本兼容
+图形界面主体-tkinter
 """
 
 import os
@@ -20,7 +20,7 @@ if SCRIPT_DIR not in sys.path:
 import cb_extract
 import cb_repack
 
-APP_TITLE = "基岩版命令方块提取/回写工具（全版本兼容）"
+APP_TITLE = "基岩版命令方块提取/回写工具"
 
 
 class LogQueueWriter:
@@ -73,6 +73,14 @@ class App:
         ttk.Button(ext_frame, text="浏览…",
                    command=self._browse_mcworld).grid(row=row, column=2, padx=4, pady=4)
         ext_frame.columnconfigure(1, weight=1)
+
+        row += 1
+        ttk.Label(ext_frame, text="输出 JSON:").grid(row=row, column=0, sticky="w", padx=8, pady=4)
+        self.ext_output_var = tk.StringVar()
+        ttk.Entry(ext_frame, textvariable=self.ext_output_var).grid(
+            row=row, column=1, sticky="we", padx=4, pady=4)
+        ttk.Button(ext_frame, text="浏览…",
+                   command=self._browse_output_json).grid(row=row, column=2, padx=4, pady=4)
 
         row += 1
         self.ext_run_btn = ttk.Button(ext_frame, text="开始提取",
@@ -205,6 +213,16 @@ class App:
             filetypes=[("Minecraft 存档", "*.mcworld"), ("所有文件", "*.*")])
         if path:
             self.ext_path_var.set(path)
+            # 自动填充默认输出 JSON 路径（用户可手动修改）
+            self.ext_output_var.set(os.path.splitext(path)[0] + "_commands.json")
+
+    def _browse_output_json(self):
+        path = filedialog.asksaveasfilename(
+            title="选择输出 JSON 路径",
+            defaultextension=".json",
+            filetypes=[("JSON", "*.json")])
+        if path:
+            self.ext_output_var.set(path)
 
     def _do_extract(self):
         mcworld_path = self.ext_path_var.get().strip()
@@ -212,11 +230,16 @@ class App:
             messagebox.showerror(APP_TITLE, "请选择有效的 .mcworld 文件")
             return
 
-        default_json = os.path.splitext(mcworld_path)[0] + "_commands.json"
+        custom_output = self.ext_output_var.get().strip()
+        if custom_output:
+            json_path = custom_output
+        else:
+            json_path = os.path.splitext(mcworld_path)[0] + "_commands.json"
 
         self.ext_run_btn.configure(state="disabled")
         self.ext_status_var.set("提取中…")
         self.log(f"开始提取: {mcworld_path}")
+        self.log(f"输出 JSON: {json_path}")
 
         def task():
             output = cb_extract.build_output_json(mcworld_path)
@@ -226,22 +249,21 @@ class App:
             self.ext_run_btn.configure(state="normal")
             if ok:
                 self.current_json = result
-                self.current_json_path = default_json
+                self.current_json_path = json_path
                 count = result["world_data"]["command_block_count"]
                 self.log(f"提取完成: {count} 个命令方块")
 
-                # 自动保存 JSON
                 try:
-                    with open(default_json, "w", encoding="utf-8") as f:
+                    with open(json_path, "w", encoding="utf-8") as f:
                         json.dump(result, f, ensure_ascii=False, indent=2)
-                    self.log(f"JSON 已自动保存: {default_json}")
+                    self.log(f"JSON 已保存: {json_path}")
                 except Exception as e:
                     self.log(f"JSON 保存失败: {e}")
 
                 self._populate_tree(result)
                 self.ext_status_var.set(f"完成: {count} 个命令方块, JSON 已保存")
                 messagebox.showinfo(APP_TITLE,
-                    f"提取完成！\n{count} 个命令方块\nJSON 已保存:\n{default_json}")
+                    f"提取完成！\n{count} 个命令方块\nJSON 已保存:\n{json_path}")
             else:
                 self.ext_status_var.set("提取失败")
                 self.log(f"提取失败: {result}")
