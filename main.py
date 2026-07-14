@@ -62,7 +62,6 @@ def main():
         print(f"    {sys.executable} cb_extract.py  存档.mcworld  (提取)")
         print(f"    {sys.executable} cb_repack.py   存档.mcworld 修改后.json  新存档.mcworld  (回写)")
         return
-
     try:
         import gui_app
     except Exception:
