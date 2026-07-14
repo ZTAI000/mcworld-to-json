@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-存档 LevelDB 读取器
+存档LevelDB读取器
 """
 
 import os
